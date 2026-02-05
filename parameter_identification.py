@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 from scipy import optimize
 
+from data_ingestion import normalize_pack_dataframe
+
 
 class PackParameterIdentifier:
     """Identify pack-level parameters from experimental data."""
@@ -17,6 +19,11 @@ class PackParameterIdentifier:
         individual_cell_data: Optional[Dict[int, pd.DataFrame]] = None,
         n_cells: int = 20,
     ) -> Dict:
+        pack_data = normalize_pack_dataframe(pack_data)
+        missing = [col for col in ("time", "pack_voltage", "pack_current") if col not in pack_data.columns]
+        if missing:
+            raise ValueError(f"pack_data missing required columns: {', '.join(missing)}")
+
         results: Dict[str, Dict] = {}
         results["pack_ecm"] = PackParameterIdentifier._identify_pack_ecm(pack_data)
         results["pack_thermal"] = PackParameterIdentifier._identify_pack_thermal(pack_data)

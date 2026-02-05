@@ -1,0 +1,8 @@
+# Ignore local datasets and generated artifacts under data/
+/data/**
+!/data/**/
+!/data/**/.gitkeep
+
+# Ignore Python bytecode caches
+__pycache__/
+*.py[cod]
