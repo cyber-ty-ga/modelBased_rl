@@ -23,6 +23,10 @@ class CellParameters:
     k2: float = 0.05
     k3: float = 0.1
     T_ref: float = 25.0
+    v_min: float = 2.5
+    v_max: float = 4.2
+    t_min: float = 0.0
+    t_max: float = 60.0
     soc_points: np.ndarray = field(default_factory=lambda: np.linspace(0, 1, 11))
     ocv_points: np.ndarray = field(
         default_factory=lambda: np.array(
@@ -62,10 +66,17 @@ class CellModel:
         self.history: List[Dict] = []
         self._record_state()
 
-    def step(self, current: float, ambient_temp: float, balancing_current: float = 0.0) -> Dict:
+    def step(
+        self, current: float, ambient_temp: float, balancing_current: float = 0.0
+    ) -> Dict:
+        """Advance one simulation step.
+
+        Current convention (A): positive = discharge, negative = charge.
+        """
         total_current = current + balancing_current
 
-        soc_dot = self.params.eta * total_current / (self.Q_effective * 3600)
+        # Coulomb counting with current in A, capacity in Ah, and time in s.
+        soc_dot = -self.params.eta * total_current / (self.Q_effective * 3600)
         self.soc = float(np.clip(self.soc + soc_dot * self.dt, 0.0, 1.0))
 
         tau1 = self.params.R1 * self.params.C1
@@ -84,6 +95,7 @@ class CellModel:
 
         ocv = self.ocv_interp(self.soc)
         effective_r0 = self.params.R0 + self.R0_growth
+        # Thevenin terminal voltage (positive discharge current lowers voltage).
         self.voltage = ocv - total_current * effective_r0 - self.v1 - self.v2
 
         self.time += self.dt
@@ -132,9 +144,9 @@ class CellModel:
 
     def get_safety_status(self) -> Dict[str, bool]:
         return {
-            "over_voltage": self.voltage > 4.2,
-            "under_voltage": self.voltage < 2.5,
-            "over_temperature": self.temperature > 60,
-            "under_temperature": self.temperature < 0,
+            "over_voltage": self.voltage > self.params.v_max,
+            "under_voltage": self.voltage < self.params.v_min,
+            "over_temperature": self.temperature > self.params.t_max,
+            "under_temperature": self.temperature < self.params.t_min,
             "over_current": abs(self.current) > 10,
         }

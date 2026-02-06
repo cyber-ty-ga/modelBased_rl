@@ -1,0 +1,38 @@
+{
+  "algorithm": "cccv",
+  "objective": "safe",
+  "objective_description": "Maintain conservative limits with moderate charge time.",
+  "cv_voltage_v": 83.0,
+  "max_charge_current_a": 7.5,
+  "config": {
+    "objective": "safe",
+    "output_root": "results/baselines",
+    "max_steps": 1200,
+    "initial_soc": 0.2,
+    "target_soc": 0.8,
+    "ambient_temp_c": 25.0,
+    "initial_temp_c": 25.0,
+    "n_series": 20,
+    "n_parallel": 1,
+    "max_charge_current_a": 10.0,
+    "balancing_type": "passive"
+  },
+  "metrics": {
+    "steps": 1000,
+    "charge_time_min": 16.666666666666668,
+    "final_soc": 0.800120186271964,
+    "target_soc": 0.8,
+    "time_to_80_soc_min": 16.666666666666668,
+    "time_to_90_soc_min": NaN,
+    "peak_pack_voltage_v": 83.04350596545837,
+    "peak_pack_temperature_c": 27.132623519035455,
+    "peak_voltage_imbalance_mv": 129.2711933030235,
+    "mean_charge_current_a": 5.392428331538444,
+    "peak_charge_current_a": 7.5,
+    "rms_charge_current_a": 6.0514122889848085,
+    "charge_throughput_ah": 1.496698842094012,
+    "energy_in_kwh": 0.11966298854448375,
+    "safety_event_count": 800,
+    "safety_event_timesteps": 623
+  }
+}

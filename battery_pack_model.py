@@ -240,6 +240,7 @@ class BatteryPack:
             self.safety_events["current_limit"] = True
 
     def step(self, pack_current: float, ambient_temp: float = 25.0) -> Dict:
+        # Pack current convention: positive = discharge, negative = charge (A).
         self.ambient_temperature = ambient_temp
         self.pack_current = pack_current
         self.balancing_active = self.config.balancing_type != "none"
